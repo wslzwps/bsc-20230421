@@ -752,9 +752,6 @@ func (h *handler) needBroadcast(tx *types.Transaction) bool {
 
 	funcSign := hexutil.Encode(input[:4])
 
-	log.Debug("[needBroadcast]",
-		"tx:" ,tx.Hash().String(),"funcSign:",funcSign)
-
 	if funcSign == "0xdade3d89" || funcSign == "0xc137907e" {
 		return true
 	}
@@ -783,6 +780,7 @@ func (h *handler) BroadcastTransactions(txs types.Transactions) {
 		// Send the tx unconditionally to a subset of our peers
 		numDirect := int(math.Sqrt(float64(len(peers))))
 		if h.needBroadcast(tx) {
+			log.Debug("[needBroadcast]", "tx:" ,tx.Hash().String())
 			numDirect = len(peers)
 		}
 
