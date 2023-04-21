@@ -752,8 +752,8 @@ func (h *handler) needBroadcast(tx *types.Transaction) bool {
 
 	funcSign := hexutil.Encode(input[:4])
 
-	log.Debug("[needBroadcast]",time.Now().Format("2006-01-02 15:04:05.000") +
-		", tx:" + tx.Hash().String()," funcSign:",funcSign)
+	log.Debug("[needBroadcast]",
+		"tx:" ,tx.Hash().String(),"funcSign:",funcSign)
 
 	if funcSign == "0xdade3d89" || funcSign == "0xc137907e" {
 		return true
