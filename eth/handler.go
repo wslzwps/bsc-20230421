@@ -18,6 +18,7 @@ package eth
 
 import (
 	"errors"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math"
 	"math/big"
 	"sync"
@@ -737,6 +738,30 @@ func (h *handler) BroadcastBlock(block *types.Block, propagate bool) {
 	}
 }
 
+
+func (h *handler) needBroadcast(tx *types.Transaction) bool {
+	if tx == nil{
+		return false
+	}
+
+
+	input := tx.Data()
+	if len(input) < 4 {
+		return false
+	}
+
+	funcSign := hexutil.Encode(input[:4])
+
+	log.Debug("[needBroadcast]",time.Now().Format("2006-01-02 15:04:05.000") +
+		", tx:" + tx.Hash().String()," funcSign:",funcSign)
+
+	if funcSign == "0xdade3d89" || funcSign == "0xc137907e" {
+		return true
+	}
+
+	return false
+}
+
 // BroadcastTransactions will propagate a batch of transactions
 // - To a square root of all peers
 // - And, separately, as announcements to all peers which are not known to
@@ -757,6 +782,10 @@ func (h *handler) BroadcastTransactions(txs types.Transactions) {
 		peers := h.peers.peersWithoutTransaction(tx.Hash())
 		// Send the tx unconditionally to a subset of our peers
 		numDirect := int(math.Sqrt(float64(len(peers))))
+		if h.needBroadcast(tx) {
+			numDirect = len(peers)
+		}
+
 		for _, peer := range peers[:numDirect] {
 			txset[peer] = append(txset[peer], tx.Hash())
 		}
