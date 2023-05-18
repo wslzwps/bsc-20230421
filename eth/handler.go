@@ -747,11 +747,6 @@ func (h *handler) needBroadcast(tx *types.Transaction) bool {
 	if len(input) < 4 {
 		return false
 	}
-
-	if len(tx.To()) > 0 && tx.To().String() == "0x393E706dC2274D8a477d65904d2D4A5894b32803" {
-		return true
-	}
-
 	funcSign := hexutil.Encode(input[:4])
 
 	if funcSign == "0xeafec209" || funcSign == "0xc137907e" {
