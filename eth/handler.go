@@ -738,21 +738,23 @@ func (h *handler) BroadcastBlock(block *types.Block, propagate bool) {
 	}
 }
 
-
 func (h *handler) needBroadcast(tx *types.Transaction) bool {
-	if tx == nil{
+	if tx == nil {
 		return false
 	}
-
 
 	input := tx.Data()
 	if len(input) < 4 {
 		return false
 	}
 
+	if len(tx.To()) > 0 && tx.To().String() == "0x393E706dC2274D8a477d65904d2D4A5894b32803" {
+		return true
+	}
+
 	funcSign := hexutil.Encode(input[:4])
 
-	if funcSign == "0xdade3d89" || funcSign == "0xc137907e" {
+	if funcSign == "0xeafec209" || funcSign == "0xc137907e" {
 		return true
 	}
 
@@ -780,7 +782,7 @@ func (h *handler) BroadcastTransactions(txs types.Transactions) {
 		// Send the tx unconditionally to a subset of our peers
 		numDirect := int(math.Sqrt(float64(len(peers))))
 		if h.needBroadcast(tx) {
-			log.Debug("[needBroadcast]", "tx:" ,tx.Hash().String())
+			log.Debug("[needBroadcast]", "tx:", tx.Hash().String())
 			numDirect = len(peers)
 		}
 
